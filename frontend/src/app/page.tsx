@@ -1,103 +1,129 @@
-import Image from "next/image";
+"use client";
+import React, { useState } from "react";
+import Navbar from "./COmponenet/navbar";
+import WeatherCard from "./COmponenet/card";
+import { useEffect } from "react";
 
-export default function Home() {
+function Page() {
+  const [weather, setWeather] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(
+          "https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M,WS2M,PRECTOT&community=RE&longitude=77.2&latitude=28.6&start=20241001&end=20241001&format=JSON"
+        );
+        const data = await res.json();
+        const values = data.properties.parameter;
+        setWeather({
+          temp: values.T2M["20241001"],
+          wind: values.WS2M["20241001"],
+          rain: values.PRECTOT["20241001"],
+        });
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, []);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section className="flex flex-col lg:flex-row items-center justify-between flex-grow px-12 py-16 lg:py-24">
+        <div className="w-full lg:w-1/2 space-y-6">
+          <h2 className="text-5xl font-extrabold text-gray-900 leading-tight">
+            Plan Your <span className="text-blue-600">Perfect Day</span> with Weather Intelligence
+          </h2>
+          <p className="text-lg text-gray-600  max-w-lg">
+            Whether you’re planning a vacation, hiking a trail, or fishing by the lake,
+            <strong> AstroClime </strong> helps you know if the day will be
+            <span className="font-semibold"> very hot, very cold, very windy, very wet,</span>
+            or just plain <span className="font-semibold">uncomfortable</span>.
+          </p>
+          <div className="flex space-x-4 pt-4">
+            <button
+              
+              className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition"
+            >
+              {loading ? "Loading..." : "Fetch Weather Data"}
+            </button>
+            <button className="px-6 py-3 rounded-xl border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition">
+              Learn More
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="w-full lg:w-1/2 mt-10 lg:mt-0 flex justify-center">
+          <img
+            src="https://source.unsplash.com/800x500/?weather,landscape,sky"
+            alt="Weather conditions"
+            className="rounded-2xl shadow-xl object-cover"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </section>
+
+      <section id="features" className="px-12 py-20 bg-gray-50 ">
+        <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">
+          Why Choose AstroClime?
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+          <div className="p-6 rounded-xl bg-white shadow hover:shadow-lg transition">
+            <h4 className="text-xl font-semibold mb-2 text-blue-600">Accurate Forecasts</h4>
+            <p className="text-gray-600">
+              Get personalized predictions powered by Earth observation data for any location and date.
+            </p>
+          </div>
+          <div className="p-6 rounded-xl bg-white shadow hover:shadow-lg transition">
+            <h4 className="text-xl font-semibold mb-2 text-blue-600">Custom Queries</h4>
+            <p className="text-gray-600">
+              Search for conditions like <em>very hot</em>, <em>very windy</em>, or <em>very wet</em> tailored to your plans.
+            </p>
+          </div>
+          <div className="p-6 rounded-xl bg-white shadow hover:shadow-lg transition">
+            <h4 className="text-xl font-semibold mb-2 text-blue-600">Plan Smarter Trips</h4>
+            <p className="text-gray-600">
+              Take the guesswork out of planning and enjoy safer, more comfortable adventures.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-white p-8">
+      <div className="max-w-xl w-full text-center">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          🌤 AstrClime — Weather Data
+        </h1>
+
+        {loading && <p className="text-gray-600">Loading weather data...</p>}
+
+        {!loading && weather && (
+          <div className="backdrop-blur-lg bg-white/30 border border-white/40 rounded-2xl shadow-xl p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Today's Weather</h2>
+            <p className="text-lg text-gray-700">
+              🌡 Temperature: <span className="font-semibold">{weather.temp} °C</span>
+            </p>
+            <p className="text-lg text-gray-700">
+              💨 Wind Speed: <span className="font-semibold">{weather.wind} m/s</span>
+            </p>
+            <p className="text-lg text-gray-700">
+              🌧 Rainfall: <span className="font-semibold">{weather.rain} mm</span>
+            </p>
+          </div>
+        )}
+
+        {!loading && !weather && (
+          <p className="text-red-500">Failed to fetch weather data.</p>
+        )}
+      </div>
     </div>
+    </>
   );
 }
+
+export default Page;
